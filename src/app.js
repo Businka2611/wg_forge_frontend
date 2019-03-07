@@ -70,6 +70,7 @@ function createHeaderCell(text, headerRow) {
     let cellText = document.createTextNode(text);
     cell.appendChild(cellText);
     headerRow.appendChild(cell);
+    return cell;
 }
 
 function findUser(users, userId) {
@@ -93,10 +94,11 @@ function findCompany(companies, companyId) {
 function createUserCell(user, company, row) {
     let text = fillUserInfo(user.gender, user.first_name, user.last_name);
     let cell = document.createElement('td');
-    let link = createLink(text);
+    let link = createLink(text, '#');
     cell.appendChild(link);
     let userDiv = createUserDiv(user, company);
     cell.appendChild(userDiv);
+    cell.className = 'user-data';
     row.appendChild(cell);
 }
 
@@ -114,13 +116,15 @@ function createUserDiv(user, company) {
     let userDiv = createDiv();
     createTextP(`Birthday: ${user.birthday}`, userDiv);
     let img = createImg(user.avatar);
-    console.log(img);
     createP(userDiv).appendChild(img);
     if (company){
-        createLink();
-        createTextP(`Company: ${company.title}`, userDiv);
+        let link = createLink(company.url, company.url);
+        let pWithLink = createP(userDiv);
+        pWithLink.innerHTML = 'Company:';
+        pWithLink.appendChild(link).innerHTML = company.title;
         createTextP(`Industry: ${company.industry}`, userDiv);
     }
+    userDiv.className ='user-details';
     return userDiv;
 }
 
@@ -129,9 +133,10 @@ function createText(text, parent) {
     parent.appendChild(cellText);
 }
 
-function createLink(text) {
+function createLink(text, linkHref) {
     let content = document.createElement('a');
-    content.href = '#';
+    content.href = linkHref;
+    content.target = '_blank';
     createText(text, content);
     return content;
 }
@@ -140,6 +145,7 @@ function createTextP(text, parent) {
     let content = document.createElement('p');
     createText(text, content);
     parent.appendChild(content);
+    return content;
 }
 
 function createP(parent) {
@@ -174,6 +180,14 @@ function replace(cardNumber) {
     return cardNumber.replace(re, replacement);
 }
 
+function sorting(order) {
+    order.sort(compareNumeric);
+}
+
+function compareNumeric(a, b) {
+    if (a > b) return 1;
+    if (a < b) return -1;
+}
 
 /*function dateTime(ms) {
     let currentDate = new Date(ms);
